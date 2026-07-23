@@ -236,6 +236,114 @@
     min-height: 18px;
   }
 
+  /* ---------- Entry screen: idea vs script ---------- */
+  #entry-screen h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+  #entry-screen p.sub{
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 28px;
+  }
+  .entry-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    width: 100%;
+  }
+  .entry-card{
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    padding: 36px 30px;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 0 1px 2px var(--shadow);
+    overflow: hidden;
+  }
+  .entry-card::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 90% at 100% 0%, rgba(255,90,54,0.12), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .entry-card:hover{
+    border-color: var(--accent-soft);
+    transform: translateY(-5px);
+    box-shadow: 0 28px 48px -20px var(--shadow);
+  }
+  .entry-card:hover::before{ opacity: 1; }
+  .entry-card:hover .entry-icon{ color: var(--accent); transform: scale(1.08) rotate(-2deg); }
+  .entry-card:active{ transform: translateY(-2px); }
+  .entry-card:focus-visible{ outline: 2px solid var(--mint); outline-offset: 3px; }
+
+  .entry-icon{
+    width: 52px;
+    height: 52px;
+    color: var(--text-muted);
+    stroke-width: 1.4;
+    margin-bottom: 22px;
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), color 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .entry-icon svg{ width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+
+  .entry-name{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.2;
+    color: var(--text);
+    margin: 0 0 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .entry-desc{
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---------- Custom script input screen ---------- */
+  #custom-script-screen h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+  #custom-script-screen p.sub{
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+  }
+  .custom-script-form{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 640px;
+  }
+  .custom-textarea{
+    resize: vertical;
+    min-height: 130px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+  }
+
   /* ---------- Category divider ---------- */
   .category-divider{
     display: flex;
@@ -803,8 +911,31 @@
       <button class="switch-link" id="auth-switch-mode">Need an account? Sign up instead</button>
     </section>
 
+    <!-- STEP 0.5: idea vs script -->
+    <section id="entry-screen" style="display:none;">
+      <h2>What do you need?</h2>
+      <p class="sub">Draw a fresh idea to figure out what to film, or jump straight to a script if you already know.</p>
+      <div class="entry-grid">
+        <button type="button" class="entry-card" id="entry-idea-btn">
+          <div class="entry-icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.6 4.6L18 9l-4.4 1.4L12 15l-1.6-4.6L6 9l4.4-1.4z"/><path d="M18.5 15l.8 2.2L21.5 18l-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></div>
+          <div>
+            <p class="entry-name">Give me an idea</p>
+            <p class="entry-desc">Pick a content type and draw a fresh, never-repeated Reels idea to film.</p>
+          </div>
+        </button>
+        <button type="button" class="entry-card" id="entry-script-btn">
+          <div class="entry-icon"><svg viewBox="0 0 24 24"><path d="M6 3.5h9l3 3v14H6z"/><path d="M15 3.5v3h3"/><path d="M8.5 12h7M8.5 15h7M8.5 9h4"/></svg></div>
+          <div>
+            <p class="entry-name">Write me a script</p>
+            <p class="entry-desc">Already have an idea in mind? Describe it and get a ready-to-film script.</p>
+          </div>
+        </button>
+      </div>
+    </section>
+
     <!-- STEP 1: niche input -->
     <section id="niche-screen" style="display:none;">
+      <button class="back-link" id="niche-back-btn">← Back</button>
       <h2>What kind of content do you make?</h2>
       <p class="sub">Be specific — "skincare for oily skin" gets you better ideas than just "beauty."</p>
       <div id="niche-form" class="niche-form">
@@ -822,6 +953,31 @@
 
       <div class="category-divider"><span>or pick a category</span></div>
       <div class="category-grid" id="category-grid"></div>
+    </section>
+
+    <!-- STEP 1.5: custom script input (skip idea drawing entirely) -->
+    <section id="custom-script-screen" style="display:none;">
+      <button class="back-link" id="custom-script-back-btn">← Back</button>
+      <h2>Write a script from your own idea</h2>
+      <p class="sub">Tell us the content type and what you want the video to cover — we'll turn it into a ready-to-film script.</p>
+      <div class="custom-script-form">
+        <input
+          type="text"
+          id="custom-script-niche"
+          class="niche-input"
+          placeholder="Content type e.g. personal finance for college students"
+          autocomplete="off"
+          maxlength="120"
+        />
+        <textarea
+          id="custom-script-idea"
+          class="niche-input custom-textarea"
+          placeholder="Describe your idea — what happens in the video, the hook, any product, story, or details you want included"
+          maxlength="800"
+        ></textarea>
+        <button type="button" id="custom-script-submit" class="niche-submit" style="align-self:flex-start;">Generate script</button>
+      </div>
+      <p class="niche-error" id="custom-script-error"></p>
     </section>
 
     <!-- STEP 2: idea generator -->
@@ -1135,8 +1291,7 @@
 
   async function enterApp(){
     document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('niche-screen').style.display = 'block';
-    showScreen('niche');
+    showScreen('entry');
     await refreshAllIdeas();
   }
 
@@ -1164,6 +1319,7 @@
   let scriptIdea = null;
   let scripts = [];
   let displayedScript = null;
+  let scriptEntryPoint = 'gen'; // 'gen' if opened from a drawn idea, 'custom' if opened from the custom script form
 
   async function refreshAllIdeas(){
     const data = await api('/api/ideas', { method: 'GET' });
@@ -1178,7 +1334,9 @@
   // ---------- screen switching ----------
   function showScreen(name){
     document.getElementById('auth-screen').style.display = (name === 'auth') ? 'block' : 'none';
+    document.getElementById('entry-screen').style.display = (name === 'entry') ? 'block' : 'none';
     document.getElementById('niche-screen').style.display = (name === 'niche') ? 'block' : 'none';
+    document.getElementById('custom-script-screen').style.display = (name === 'custom-script') ? 'block' : 'none';
     document.getElementById('gen-screen').classList.toggle('active', name === 'gen');
     document.getElementById('script-screen').classList.toggle('active', name === 'script');
     document.getElementById('history-screen').classList.toggle('active', name === 'history');
@@ -1202,6 +1360,22 @@
   submitBtn.addEventListener('click', handleNicheSubmit);
   input.addEventListener('keydown', (e) => {
     if(e.key === 'Enter'){ e.preventDefault(); handleNicheSubmit(); }
+  });
+
+  document.getElementById('entry-idea-btn').addEventListener('click', () => {
+    showScreen('niche');
+  });
+  document.getElementById('entry-script-btn').addEventListener('click', () => {
+    document.getElementById('custom-script-niche').value = '';
+    document.getElementById('custom-script-idea').value = '';
+    document.getElementById('custom-script-error').textContent = '';
+    showScreen('custom-script');
+  });
+  document.getElementById('niche-back-btn').addEventListener('click', () => {
+    showScreen('entry');
+  });
+  document.getElementById('custom-script-back-btn').addEventListener('click', () => {
+    showScreen('entry');
   });
 
   async function startNiche(text){
@@ -1349,15 +1523,55 @@
     }
   });
 
+  // ---------- custom script (skip idea drawing) ----------
+  const customScriptNicheEl = document.getElementById('custom-script-niche');
+  const customScriptIdeaEl = document.getElementById('custom-script-idea');
+  const customScriptErrorEl = document.getElementById('custom-script-error');
+  const customScriptSubmitBtn = document.getElementById('custom-script-submit');
+
+  async function handleCustomScriptSubmit(){
+    const niche = customScriptNicheEl.value.trim() || 'General content';
+    const ideaText = customScriptIdeaEl.value.trim();
+
+    if(ideaText.length < 5){
+      customScriptErrorEl.textContent = 'Describe your idea in a bit more detail first.';
+      return;
+    }
+    customScriptErrorEl.textContent = '';
+    customScriptSubmitBtn.disabled = true;
+    customScriptSubmitBtn.textContent = 'Setting up...';
+
+    try{
+      const slug = slugify(niche);
+      const saved = await api('/api/ideas', {
+        method: 'POST',
+        body: JSON.stringify({ slug, nicheName: niche, idea: ideaText, technique: 'custom' })
+      });
+      const ideaRecord = saved.idea;
+      allIdeas.push(ideaRecord);
+      await openScriptScreen(ideaRecord, 'custom');
+    }catch(err){
+      customScriptErrorEl.textContent = 'Could not start that script: ' + err.message;
+    }finally{
+      customScriptSubmitBtn.disabled = false;
+      customScriptSubmitBtn.textContent = 'Generate script';
+    }
+  }
+
+  customScriptSubmitBtn.addEventListener('click', handleCustomScriptSubmit);
+
   // ---------- script generation ----------
-  async function openScriptScreen(idea){
+  async function openScriptScreen(idea, entryPoint){
     scriptIdea = idea;
+    scriptEntryPoint = entryPoint || 'gen';
     if(idea.slug){
       currentSlug = idea.slug;
       currentNiche = idea.nicheName || nicheNameForSlug(idea.slug);
     }
 
     showScreen('script');
+    document.getElementById('script-back-btn').textContent =
+      scriptEntryPoint === 'custom' ? '← Back to your idea' : '← Back to ideas';
     document.getElementById('script-idea-label').textContent = idea.idea;
     document.getElementById('download-script-btn').disabled = true;
     document.getElementById('script-body').innerHTML = '<p class="idea-empty">Loading...</p>';
@@ -1380,7 +1594,11 @@
   }
 
   document.getElementById('script-back-btn').addEventListener('click', () => {
-    showScreen('gen');
+    if(scriptEntryPoint === 'custom'){
+      showScreen('custom-script');
+    }else{
+      showScreen('gen');
+    }
   });
 
   function updateScriptStats(){
@@ -1573,7 +1791,7 @@
   });
 
   document.getElementById('history-back-btn').addEventListener('click', () => {
-    showScreen(currentSlug ? 'gen' : 'niche');
+    showScreen(currentSlug ? 'gen' : 'entry');
   });
 
   document.getElementById('tab-ideas').addEventListener('click', () => {
