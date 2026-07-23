@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reel Roll — never repeat an idea</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FDF9F3;
+    --bg-soft: #F7F0FF;
+    --surface: #FFFFFF;
+    --surface-raised: #FBF5FF;
+    --line: #EAE0F2;
+    --text: #241A30;
+    --text-muted: #766B87;
+    --accent: #FF5A36;
+    --accent-soft: #FF7A55;
+    --mint: #12B87E;
+    --shadow: rgba(36, 26, 48, 0.12);
+  }
+
+  :root[data-theme="dark"]{
+    --bg: #150E1B;
+    --bg-soft: #1D1526;
+    --surface: #241A30;
+    --surface-raised: #2C2038;
+    --line: #3A2C48;
+    --text: #EFE9F7;
+    --text-muted: #9C8FB0;
+    --accent: #FF5A36;
+    --accent-soft: #FF7A55;
+    --mint: #2FE6A7;
+    --shadow: rgba(10, 5, 15, 0.55);
+  }
+
+  body, .reel-frame, .side-panel, .niche-input, .ghost-btn, .theme-toggle{
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background:
+      radial-gradient(60% 50% at 85% -10%, rgba(255,90,54,0.10), transparent 60%),
+      radial-gradient(50% 40% at 5% 100%, rgba(18,184,126,0.08), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wrap{
+    width: 100%;
+    max-width: 1100px;
+    padding: 40px 24px 64px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 24px;
+  }
+  .eyebrow{
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin: 0 0 10px;
+  }
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(32px, 5vw, 54px);
+    line-height: 1.02;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  h1 span{ color: var(--accent); font-style: italic; }
+  .tagline{
+    max-width: 320px;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .header-right{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .theme-toggle{
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .theme-toggle:hover{ border-color: var(--accent-soft); }
+  .theme-toggle:focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- Layout ---------- */
+  .stage{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* ---------- Step 1: niche picker ---------- */
+  #niche-screen h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+  #niche-screen p.sub{
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+  }
+  .niche-form{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    max-width: 620px;
+  }
+  .niche-input{
+    flex: 1;
+    min-width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 15px 18px;
+    border-radius: 12px;
+    transition: border-color 0.15s ease;
+  }
+  .niche-input::placeholder{ color: var(--text-muted); }
+  .niche-input:focus{
+    outline: none;
+    border-color: var(--accent-soft);
+  }
+  .niche-submit{
+    background: var(--accent);
+    color: #1A0F08;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 15px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.12s ease;
+  }
+  .niche-submit:hover{ background: var(--accent-soft); transform: translateY(-1px); }
+  .niche-submit:focus-visible{ outline: 2px solid var(--mint); outline-offset: 2px; }
+  .niche-error{
+    color: var(--accent-soft);
+    font-size: 13px;
+    margin: 10px 0 0;
+    min-height: 18px;
+  }
+
+  /* ---------- Step 2: generator ---------- */
+  #gen-screen{ display: none; }
+  #gen-screen.active{ display: grid; }
+
+  .gen-layout{
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 760px){
+    .gen-layout{ grid-template-columns: 1fr; }
+  }
+
+  .side-panel{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .side-panel h3{
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 14px;
+  }
+  .current-niche{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .current-niche .em{ font-size: 26px; }
+  .current-niche .nm{ font-weight: 700; font-size: 16px; }
+
+  .stat-row{
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+  }
+  .stat-row b{ color: var(--text); }
+
+  .side-note{
+    color: var(--text-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin: 8px 0 20px;
+  }
+  .history-heading{ margin-top: 4px; }
+  .history-list{
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .history-list li{
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--text-muted);
+    border-left: 2px solid var(--line);
+    padding-left: 10px;
+  }
+  .history-list li.history-empty{
+    border-left: 2px solid var(--line);
+    font-style: italic;
+  }
+  .history-list li b{
+    color: var(--text);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .ghost-btn{
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-muted);
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .ghost-btn:hover{ border-color: var(--accent-soft); color: var(--text); }
+
+  /* ---------- Reel frame (signature element) ---------- */
+  .reel-stage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .reel-frame{
+    position: relative;
+    width: min(320px, 100%);
+    aspect-ratio: 9 / 16;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: 0 30px 60px -20px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sprockets{
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px 14px;
+  }
+  .sprockets span{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+  .sprockets.top{ border-bottom: 1px dashed var(--line); }
+  .sprockets.bottom{ border-top: 1px dashed var(--line); }
+
+  .reel-body{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 24px;
+    text-align: center;
+    position: relative;
+  }
+
+  .idea-empty{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .idea-text{
+    font-family: 'Fraunces', serif;
+    font-size: clamp(18px, 3vw, 21px);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .idea-tag{
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mint);
+    background: rgba(18,184,126,0.10);
+    border: 1px solid rgba(18,184,126,0.35);
+    border-radius: 999px;
+    padding: 4px 10px;
+    margin-bottom: 14px;
+  }
+
+  @keyframes reelIn{
+    0%{ opacity: 0; transform: translateY(18px); }
+    60%{ opacity: 1; }
+    100%{ opacity: 1; transform: translateY(0); }
+  }
+  .idea-text.animate, .idea-tag.animate{
+    animation: reelIn 0.45s ease;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .idea-text.animate, .idea-tag.animate{ animation: none; }
+  }
+
+  .done-state{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .done-state b{ color: var(--accent-soft); }
+
+  .draw-btn{
+    margin-top: 22px;
+    background: var(--accent);
+    color: #1A0F08;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    padding: 16px 30px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.12s ease;
+    box-shadow: 0 12px 24px -8px rgba(255,90,54,0.5);
+  }
+  .draw-btn:hover{ background: var(--accent-soft); transform: translateY(-1px); }
+  .draw-btn:active{ transform: translateY(0); }
+  .draw-btn:disabled{
+    background: var(--surface-raised);
+    color: var(--text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .draw-btn:focus-visible{ outline: 2px solid var(--mint); outline-offset: 3px; }
+
+  .switch-link{
+    margin-top: 18px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .switch-link:hover{ color: var(--text); }
+
+  footer{
+    margin-top: 48px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .sr-only{
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="eyebrow">Reel Roll · idea generator</p>
+      <h1>A fresh idea,<br>every <span>click</span>.</h1>
+    </div>
+    <div class="header-right">
+      <div class="header-actions">
+        <button id="history-btn" class="theme-toggle" aria-label="View idea history" title="View idea history">
+          <span>🕘</span>
+        </button>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+          <span id="theme-icon">🌙</span>
+        </button>
+      </div>
+      <p class="tagline">Pick your content type. Draw an idea. Once it's drawn, it's off the roll for good — so you never see the same one twice.</p>
+    </div>
+  </header>
+
+  <div class="stage">
+
+    <!-- STEP 1: niche input -->
+    <section id="niche-screen">
+      <h2>What kind of content do you make?</h2>
+      <p class="sub">Be specific — "skincare for oily skin" gets you better ideas than just "beauty."</p>
+      <div id="niche-form" class="niche-form">
+        <input
+          type="text"
+          id="niche-input"
+          class="niche-input"
+          placeholder="e.g. personal finance for college students"
+          autocomplete="off"
+          maxlength="120"
+        />
+        <button type="button" id="niche-submit" class="niche-submit">Start the roll</button>
+      </div>
+      <p class="niche-error" id="niche-error"></p>
+    </section>
+
+    <!-- STEP 2: generator -->
+    <section id="gen-screen">
+      <div class="gen-layout">
+
+        <aside class="side-panel">
+          <h3>Content type</h3>
+          <div class="current-niche">
+            <span class="nm" id="panel-name"></span>
+          </div>
+
+          <div class="stat-row"><span>Ideas drawn</span><b id="stat-used">0</b></div>
+          <p class="side-note">Every idea is generated fresh for this content type and checked against your history so it never repeats.</p>
+
+          <h3 class="history-heading">History</h3>
+          <ul class="history-list" id="history-list"><li class="history-empty">Nothing drawn yet.</li></ul>
+
+          <button class="ghost-btn" id="switch-niche-btn">Change content type</button>
+          <button class="ghost-btn" id="reset-btn">Clear history</button>
+        </aside>
+
+        <div class="reel-stage">
+          <div class="reel-frame">
+            <div class="sprockets top"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="reel-body" id="reel-body">
+              <p class="idea-empty">Your next idea shows up here. Tap the button below to draw one.</p>
+            </div>
+            <div class="sprockets bottom"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </div>
+
+          <button class="draw-btn" id="draw-btn">Give me an idea</button>
+          <p aria-live="polite" class="sr-only" id="live-region"></p>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <footer>Every idea uses a real short-form hook technique — no generator can promise it'll go viral, execution and timing still matter.</footer>
+</div>
+
+<script>
+(function(){
+
+  // ---------- theme toggle ----------
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+
+  function applyTheme(theme){
+    if(theme === 'dark'){
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeIcon.textContent = '☀️';
+      themeToggleBtn.setAttribute('aria-label', 'Switch to light mode');
+      themeToggleBtn.setAttribute('title', 'Switch to light mode');
+    }else{
+      document.documentElement.removeAttribute('data-theme');
+      themeIcon.textContent = '🌙';
+      themeToggleBtn.setAttribute('aria-label', 'Switch to dark mode');
+      themeToggleBtn.setAttribute('title', 'Switch to dark mode');
+    }
+  }
+
+  async function initTheme(){
+    let theme = null;
+    try{
+      const res = await window.storage.get('theme-preference', false);
+      theme = res ? res.value : null;
+    }catch(e){ /* no saved preference yet */ }
+    if(!theme){
+      theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(theme);
+  }
+
+  themeToggleBtn.addEventListener('click', async () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    applyTheme(next);
+    try{ await window.storage.set('theme-preference', next, false); }catch(e){ /* continue without persistence */ }
+  });
+
+  initTheme();
+
+  const HOOK_TECHNIQUES = [
+    "curiosity gap", "pattern interrupt", "before/after", "myth-bust",
+    "relatable POV", "controversial take", "list format", "storytelling",
+    "unexpected reveal", "direct question"
+  ];
+
+  function slugify(text){
+    return text.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'general';
+  }
+
+  // ---------- storage helpers (per-user, not shared) ----------
+  async function getHistory(slug){
+    try{
+      const res = await window.storage.get('history:' + slug, false);
+      return res ? JSON.parse(res.value) : [];
+    }catch(e){
+      return [];
+    }
+  }
+  async function setHistory(slug, arr){
+    try{
+      await window.storage.set('history:' + slug, JSON.stringify(arr), false);
+    }catch(e){ /* storage unavailable, continue in-memory only */ }
+  }
+
+  // ---------- state ----------
+  let currentNiche = null;   // raw text the user typed
+  let currentSlug = null;
+  let history = [];          // [{idea, technique}]
+
+  // ---------- step 1: niche input ----------
+  const submitBtn = document.getElementById('niche-submit');
+  const input = document.getElementById('niche-input');
+  const errorEl = document.getElementById('niche-error');
+
+  async function handleNicheSubmit(){
+    const value = input.value.trim();
+    if(value.length < 2){
+      errorEl.textContent = 'Type what kind of content you make first.';
+      return;
+    }
+    errorEl.textContent = '';
+    await startNiche(value);
+  }
+
+  submitBtn.addEventListener('click', handleNicheSubmit);
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      handleNicheSubmit();
+    }
+  });
+
+  async function startNiche(text){
+    currentNiche = text;
+    currentSlug = slugify(text);
+    history = await getHistory(currentSlug);
+
+    document.getElementById('niche-screen').style.display = 'none';
+    document.getElementById('gen-screen').classList.add('active');
+    document.getElementById('panel-name').textContent = text;
+    resetReelBody();
+    renderHistory();
+    updateStats();
+  }
+
+  function resetReelBody(){
+    document.getElementById('reel-body').innerHTML =
+      '<p class="idea-empty">Your next idea shows up here. Tap the button below to draw one.</p>';
+    const btn = document.getElementById('draw-btn');
+    btn.disabled = false;
+    btn.textContent = 'Give me an idea';
+  }
+
+  function updateStats(){
+    document.getElementById('stat-used').textContent = history.length;
+  }
+
+  function renderHistory(){
+    const list = document.getElementById('history-list');
+    if(history.length === 0){
+      list.innerHTML = '<li class="history-empty">Nothing drawn yet.</li>';
+      return;
+    }
+    list.innerHTML = history
+      .slice()
+      .reverse()
+      .map((h, i) => `<li><b>#${history.length - i} · ${escapeHtml(h.technique || '')}</b>${escapeHtml(h.idea)}</li>`)
+      .join('');
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // ---------- idea generation via Claude ----------
+  async function callModel(niche, avoidList){
+    const system = "You are an Instagram Reels idea strategist for content creators. Given a creator's content type and a list of ideas already given to them, generate ONE new Reels idea tailored specifically to that content type. It must be specific and immediately actionable (something the creator could film today), and it must use one clear, proven short-form hook technique from this set: " + HOOK_TECHNIQUES.join(", ") + ". It must not repeat or closely resemble any idea already given. Respond with ONLY a JSON object and nothing else — no markdown fences, no preamble: {\"idea\": \"the idea, 1-3 sentences, written directly to the creator\", \"technique\": \"one of the technique names from the list above\"}";
+
+    const userMsg = "Content type: " + niche + "\n\nIdeas already given (do not repeat or closely resemble these):\n" +
+      (avoidList.length ? avoidList.map(a => "- " + a).join("\n") : "None yet.");
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: system,
+        messages: [{ role: "user", content: userMsg }]
+      })
+    });
+
+    if(!response.ok){ throw new Error('Request failed'); }
+    const data = await response.json();
+    const textBlock = (data.content || []).find(b => b.type === 'text');
+    if(!textBlock){ throw new Error('No text in response'); }
+    const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+    return JSON.parse(cleaned);
+  }
+
+  async function drawIdea(){
+    const btn = document.getElementById('draw-btn');
+    const body = document.getElementById('reel-body');
+    btn.disabled = true;
+    btn.textContent = 'Rolling...';
+    body.innerHTML = '<p class="idea-empty">Cooking up something tailored to "' + escapeHtml(currentNiche) + '"...</p>';
+
+    // send the last 20 ideas as context to keep the request light while still avoiding repeats
+    const recentIdeas = history.slice(-20).map(h => h.idea);
+
+    let result = null;
+    let attempts = 0;
+    const seenLower = new Set(history.map(h => h.idea.trim().toLowerCase()));
+
+    try{
+      while(attempts < 3){
+        attempts++;
+        const candidate = await callModel(currentNiche, recentIdeas);
+        if(candidate && candidate.idea && !seenLower.has(candidate.idea.trim().toLowerCase())){
+          result = candidate;
+          break;
+        }
+      }
+      if(!result){ throw new Error('Could not find a fresh idea'); }
+
+      history.push(result);
+      await setHistory(currentSlug, history);
+
+      body.innerHTML = `
+        <div>
+          <span class="idea-tag animate">${escapeHtml(result.technique || 'idea')}</span>
+          <p class="idea-text animate">${escapeHtml(result.idea)}</p>
+        </div>
+      `;
+      document.getElementById('live-region').textContent = result.idea;
+      renderHistory();
+      updateStats();
+    }catch(err){
+      body.innerHTML = '<p class="done-state">Couldn\'t reach the idea engine just now. Give it another try.</p>';
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Give me an idea';
+    }
+  }
+
+  document.getElementById('draw-btn').addEventListener('click', drawIdea);
+
+  document.getElementById('switch-niche-btn').addEventListener('click', () => {
+    document.getElementById('gen-screen').classList.remove('active');
+    document.getElementById('niche-screen').style.display = 'block';
+    input.value = '';
+    input.focus();
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', async () => {
+    if(!currentSlug) return;
+    const ok = confirm(`Clear idea history for "${currentNiche}"? You may start seeing repeats after this.`);
+    if(!ok) return;
+    history = [];
+    await setHistory(currentSlug, []);
+    resetReelBody();
+    renderHistory();
+    updateStats();
+  });
+
+})();
+</script>
+</body>
+</html>
