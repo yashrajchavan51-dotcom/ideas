@@ -58,7 +58,7 @@
 
   .wrap{
     width: 100%;
-    max-width: 1100px;
+    max-width: 1200px;
     padding: 40px 24px 64px;
   }
 
@@ -103,6 +103,7 @@
     align-items: flex-end;
     gap: 12px;
   }
+  .header-actions{ display: flex; gap: 10px; }
   .theme-toggle{
     width: 40px;
     height: 40px;
@@ -118,6 +119,18 @@
   }
   .theme-toggle:hover{ border-color: var(--accent-soft); }
   .theme-toggle:focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; }
+  .account-chip{
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0 14px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+  }
 
   /* ---------- Layout ---------- */
   .stage{
@@ -183,9 +196,9 @@
     min-height: 18px;
   }
 
-  /* ---------- Step 2: generator ---------- */
-  #gen-screen, #script-screen{ display: none; }
-  #gen-screen.active, #script-screen.active{ display: grid; }
+  /* ---------- Steps 2/3/4 ---------- */
+  #gen-screen, #script-screen, #history-screen{ display: none; }
+  #gen-screen.active, #script-screen.active, #history-screen.active{ display: grid; }
 
   .gen-layout{
     display: grid;
@@ -217,7 +230,6 @@
     gap: 10px;
     margin-bottom: 18px;
   }
-  .current-niche .em{ font-size: 26px; }
   .current-niche .nm{ font-weight: 700; font-size: 16px; }
 
   .stat-row{
@@ -285,17 +297,21 @@
   }
   .ghost-btn:hover{ border-color: var(--accent-soft); color: var(--text); }
 
-  /* ---------- Reel frame (signature element) ---------- */
+  /* ---------- Reel frame + side actions ---------- */
   .reel-stage{
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 28px;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   .reel-frame{
     position: relative;
-    width: min(320px, 100%);
-    aspect-ratio: 9 / 16;
+    width: min(560px, 100%);
+    min-height: 420px;
+    max-height: 78vh;
     background: var(--bg-soft);
     border: 1px solid var(--line);
     border-radius: 28px;
@@ -304,15 +320,12 @@
     flex-direction: column;
     overflow: hidden;
   }
-  .reel-frame.script-frame{
-    aspect-ratio: auto;
-    min-height: 480px;
-  }
 
   .sprockets{
     display: flex;
     justify-content: space-evenly;
     padding: 10px 14px;
+    flex-shrink: 0;
   }
   .sprockets span{
     width: 8px; height: 8px;
@@ -324,17 +337,18 @@
 
   .reel-body{
     flex: 1;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 28px 24px;
+    padding: 28px 32px;
     text-align: center;
     position: relative;
+    overflow-y: auto;
   }
   .reel-body.script-body{
     align-items: flex-start;
     text-align: left;
-    overflow-y: auto;
   }
 
   .idea-empty{
@@ -345,7 +359,7 @@
 
   .idea-text{
     font-family: 'Fraunces', serif;
-    font-size: clamp(18px, 3vw, 21px);
+    font-size: clamp(17px, 2.6vw, 20px);
     font-weight: 400;
     line-height: 1.5;
     color: var(--text);
@@ -402,8 +416,16 @@
   }
   .done-state b{ color: var(--accent-soft); }
 
+  /* ---------- Actions column (sits beside the frame, not below it) ---------- */
+  .reel-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 190px;
+    padding-top: 8px;
+  }
+
   .draw-btn{
-    margin-top: 22px;
     background: var(--accent);
     color: #1A0F08;
     border: none;
@@ -411,11 +433,12 @@
     font-weight: 600;
     font-size: 15px;
     letter-spacing: 0.01em;
-    padding: 16px 30px;
+    padding: 16px 24px;
     border-radius: 999px;
     cursor: pointer;
     transition: transform 0.12s ease, background 0.12s ease;
     box-shadow: 0 12px 24px -8px rgba(255,90,54,0.5);
+    white-space: nowrap;
   }
   .draw-btn:hover{ background: var(--accent-soft); transform: translateY(-1px); }
   .draw-btn:active{ transform: translateY(0); }
@@ -427,45 +450,37 @@
   }
   .draw-btn:focus-visible{ outline: 2px solid var(--mint); outline-offset: 3px; }
 
-  .btn-row{
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 22px;
-  }
-  .secondary-btn{
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--line);
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    padding: 15px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: border-color 0.15s ease, transform 0.12s ease;
-  }
-  .secondary-btn:hover{ border-color: var(--accent-soft); transform: translateY(-1px); }
-  .secondary-btn:disabled{ opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  .script-cta-btn{
-    margin-top: 18px;
+  .secondary-action-btn{
     background: var(--surface);
     color: var(--accent);
     border: 1px solid var(--accent-soft);
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 14px;
-    padding: 12px 20px;
+    padding: 13px 20px;
     border-radius: 999px;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.12s ease;
   }
-  .script-cta-btn:hover{ background: rgba(255,90,54,0.08); transform: translateY(-1px); }
+  .secondary-action-btn:hover{ background: rgba(255,90,54,0.08); transform: translateY(-1px); }
+  .secondary-action-btn:disabled{ opacity: 0.45; cursor: not-allowed; transform: none; }
+
+  .download-btn{
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--line);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 13px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.12s ease;
+  }
+  .download-btn:hover{ border-color: var(--accent-soft); transform: translateY(-1px); }
+  .download-btn:disabled{ opacity: 0.45; cursor: not-allowed; transform: none; }
 
   .switch-link{
-    margin-top: 18px;
     background: none;
     border: none;
     color: var(--text-muted);
@@ -474,6 +489,8 @@
     text-decoration: underline;
     text-underline-offset: 3px;
     cursor: pointer;
+    text-align: left;
+    padding: 4px 0;
   }
   .switch-link:hover{ color: var(--text); }
 
@@ -491,6 +508,71 @@
     padding: 0;
   }
   .back-link:hover{ color: var(--text); }
+
+  /* ---------- History screen ---------- */
+  #history-screen{ max-width: 820px; margin: 0 auto; width: 100%; }
+  .history-tabs{
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .history-tab{
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 6px 12px;
+    cursor: pointer;
+    margin-bottom: -1px;
+  }
+  .history-tab.active{
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .full-history-list{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .full-history-item{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .full-history-item:hover{ border-color: var(--accent-soft); }
+  .full-history-item .fh-meta{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .full-history-item .fh-niche{ color: var(--accent-soft); }
+  .full-history-item .fh-text{
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .full-history-empty{
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 30px 0;
+    text-align: center;
+  }
 
   footer{
     margin-top: 48px;
@@ -518,21 +600,38 @@
     </div>
     <div class="header-right">
       <div class="header-actions">
-        <button id="history-btn" class="theme-toggle" aria-label="View idea history" title="View idea history">
+        <span id="account-chip" class="account-chip" style="display:none;"></span>
+        <button id="history-btn" class="theme-toggle" aria-label="View full history" title="View full history">
           <span>🕘</span>
+        </button>
+        <button id="logout-btn" class="theme-toggle" aria-label="Log out" title="Log out" style="display:none;">
+          <span>⎋</span>
         </button>
         <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
           <span id="theme-icon">🌙</span>
         </button>
       </div>
-      <p class="tagline">Pick your content type. Draw an idea, then turn it into a script. Nothing repeats — every idea and every script you've seen stays saved in your history.</p>
+      <p class="tagline">Pick your content type. Draw an idea, then turn it into a script. Nothing repeats — every idea and every script you've seen stays saved to your account.</p>
     </div>
   </header>
 
   <div class="stage">
 
+    <!-- STEP 0: auth -->
+    <section id="auth-screen">
+      <h2 id="auth-heading">Log in to Reel Roll</h2>
+      <p class="sub" id="auth-sub">Your ideas and scripts are saved to your account, so they're there on any device.</p>
+      <div class="niche-form">
+        <input type="text" id="auth-username" class="niche-input" placeholder="Username" autocomplete="username" maxlength="40" />
+        <input type="password" id="auth-password" class="niche-input" placeholder="Password" autocomplete="current-password" maxlength="100" />
+        <button type="button" id="auth-submit" class="niche-submit">Log in</button>
+      </div>
+      <p class="niche-error" id="auth-error"></p>
+      <button class="switch-link" id="auth-switch-mode">Need an account? Sign up instead</button>
+    </section>
+
     <!-- STEP 1: niche input -->
-    <section id="niche-screen">
+    <section id="niche-screen" style="display:none;">
       <h2>What kind of content do you make?</h2>
       <p class="sub">Be specific — "skincare for oily skin" gets you better ideas than just "beauty."</p>
       <div id="niche-form" class="niche-form">
@@ -573,13 +672,14 @@
           <div class="reel-frame">
             <div class="sprockets top"><span></span><span></span><span></span><span></span><span></span><span></span></div>
             <div class="reel-body" id="reel-body">
-              <p class="idea-empty">Your next idea shows up here. Tap the button below to draw one.</p>
+              <p class="idea-empty">Your next idea shows up here. Tap the button to draw one.</p>
             </div>
             <div class="sprockets bottom"><span></span><span></span><span></span><span></span><span></span><span></span></div>
           </div>
 
-          <div class="btn-row">
+          <div class="reel-actions">
             <button class="draw-btn" id="draw-btn">Give me an idea</button>
+            <button class="secondary-action-btn" id="get-script-btn" style="display:none;">Write me a script →</button>
           </div>
           <p aria-live="polite" class="sr-only" id="live-region"></p>
         </div>
@@ -607,22 +707,35 @@
         </aside>
 
         <div class="reel-stage">
-          <button class="back-link" id="script-back-btn">← Back to ideas</button>
-          <div class="reel-frame script-frame">
-            <div class="sprockets top"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-            <div class="reel-body script-body" id="script-body">
-              <p class="idea-empty">Generating your script...</p>
+          <div style="width:100%;">
+            <button class="back-link" id="script-back-btn">← Back to ideas</button>
+            <div class="reel-frame script-frame" style="margin:0 auto;">
+              <div class="sprockets top"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="reel-body script-body" id="script-body">
+                <p class="idea-empty">Generating your script...</p>
+              </div>
+              <div class="sprockets bottom"><span></span><span></span><span></span><span></span><span></span><span></span></div>
             </div>
-            <div class="sprockets bottom"><span></span><span></span><span></span><span></span><span></span><span></span></div>
           </div>
 
-          <div class="btn-row">
+          <div class="reel-actions">
             <button class="draw-btn" id="new-script-btn">New script</button>
+            <button class="download-btn" id="download-script-btn">Download script</button>
           </div>
           <p aria-live="polite" class="sr-only" id="script-live-region"></p>
         </div>
 
       </div>
+    </section>
+
+    <!-- STEP 4: full history screen -->
+    <section id="history-screen">
+      <button class="back-link" id="history-back-btn">← Back</button>
+      <div class="history-tabs">
+        <button class="history-tab active" id="tab-ideas" data-tab="ideas">Ideas</button>
+        <button class="history-tab" id="tab-scripts" data-tab="scripts">Scripts</button>
+      </div>
+      <ul class="full-history-list" id="full-history-list"></ul>
     </section>
 
   </div>
@@ -634,12 +747,10 @@
 (function(){
 
   // =========================================================
-  // CONFIG — point this at your own deployed proxy (see README).
-  // This file no longer calls api.anthropic.com directly because
-  // that requires a secret API key, which must never live in
-  // client-side code that anyone can view via "View Source".
+  // CONFIG — your deployed Worker URL (same Worker now handles
+  // auth, storage, and the Claude proxy — see worker.js + schema.sql).
   // =========================================================
-  const PROXY_URL = "https://reel-roll-proxy.jacksparrow5176-142.workers.dev";
+  const API_BASE = "https://reel-roll-proxy.jacksparrow5176-142.workers.dev";
 
   // ---------- theme toggle ----------
   const themeToggleBtn = document.getElementById('theme-toggle');
@@ -661,7 +772,7 @@
 
   function initTheme(){
     let theme = null;
-    try{ theme = localStorage.getItem('reelroll-theme'); }catch(e){ /* storage unavailable */ }
+    try{ theme = localStorage.getItem('reelroll-theme'); }catch(e){}
     if(!theme){
       theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
     }
@@ -672,7 +783,7 @@
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const next = isDark ? 'light' : 'dark';
     applyTheme(next);
-    try{ localStorage.setItem('reelroll-theme', next); }catch(e){ /* continue without persistence */ }
+    try{ localStorage.setItem('reelroll-theme', next); }catch(e){}
   });
 
   initTheme();
@@ -687,53 +798,182 @@
     return text.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'general';
   }
 
-  function genId(){
-    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-  }
-
   function escapeHtml(str){
     const d = document.createElement('div');
     d.textContent = str;
     return d.innerHTML;
   }
 
-  // ---------- storage helpers (localStorage, per-browser) ----------
-  function getHistory(slug){
+  function formatDate(ts){
+    if(!ts) return '';
     try{
-      const raw = localStorage.getItem('reelroll-history:' + slug);
-      return raw ? JSON.parse(raw) : [];
-    }catch(e){
-      return [];
-    }
-  }
-  function setHistory(slug, arr){
-    try{
-      localStorage.setItem('reelroll-history:' + slug, JSON.stringify(arr));
-    }catch(e){ /* storage unavailable, continue in-memory only */ }
+      return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    }catch(e){ return ''; }
   }
 
-  function getScripts(slug, ideaId){
-    try{
-      const raw = localStorage.getItem('reelroll-scripts:' + slug + ':' + ideaId);
-      return raw ? JSON.parse(raw) : [];
-    }catch(e){
-      return [];
-    }
-  }
-  function setScripts(slug, ideaId, arr){
-    try{
-      localStorage.setItem('reelroll-scripts:' + slug + ':' + ideaId, JSON.stringify(arr));
-    }catch(e){ /* storage unavailable, continue in-memory only */ }
+  function downloadText(filename, text){
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
-  // ---------- state ----------
-  let currentNiche = null;   // raw text the user typed
+  // ---------- auth / account state ----------
+  let authToken = null;
+  let authUsername = null;
+  try{ authToken = localStorage.getItem('reelroll-token'); authUsername = localStorage.getItem('reelroll-username'); }catch(e){}
+
+  function saveAuth(token, username){
+    authToken = token; authUsername = username;
+    try{ localStorage.setItem('reelroll-token', token); localStorage.setItem('reelroll-username', username); }catch(e){}
+  }
+  function clearAuth(){
+    authToken = null; authUsername = null;
+    try{ localStorage.removeItem('reelroll-token'); localStorage.removeItem('reelroll-username'); }catch(e){}
+  }
+
+  async function api(path, options){
+    options = options || {};
+    const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+    if(authToken) headers['Authorization'] = 'Bearer ' + authToken;
+    const res = await fetch(API_BASE + path, Object.assign({}, options, { headers }));
+    let data = null;
+    try{ data = await res.json(); }catch(e){}
+    if(!res.ok){
+      const msg = (data && data.error) ? data.error : ('Request failed (' + res.status + ')');
+      const err = new Error(msg);
+      err.status = res.status;
+      throw err;
+    }
+    return data;
+  }
+
+  function showAccountChip(){
+    const chip = document.getElementById('account-chip');
+    const logoutBtn = document.getElementById('logout-btn');
+    if(authUsername){
+      chip.textContent = '@' + authUsername;
+      chip.style.display = 'flex';
+      logoutBtn.style.display = 'flex';
+    }else{
+      chip.style.display = 'none';
+      logoutBtn.style.display = 'none';
+    }
+  }
+
+  // ---------- auth screen ----------
+  let authMode = 'login'; // or 'signup'
+  const authUsernameEl = document.getElementById('auth-username');
+  const authPasswordEl = document.getElementById('auth-password');
+  const authErrorEl = document.getElementById('auth-error');
+  const authSubmitBtn = document.getElementById('auth-submit');
+  const authSwitchBtn = document.getElementById('auth-switch-mode');
+
+  function setAuthMode(mode){
+    authMode = mode;
+    if(mode === 'login'){
+      document.getElementById('auth-heading').textContent = 'Log in to Reel Roll';
+      authSubmitBtn.textContent = 'Log in';
+      authSwitchBtn.textContent = "Need an account? Sign up instead";
+    }else{
+      document.getElementById('auth-heading').textContent = 'Create your Reel Roll account';
+      authSubmitBtn.textContent = 'Sign up';
+      authSwitchBtn.textContent = "Already have an account? Log in instead";
+    }
+    authErrorEl.textContent = '';
+  }
+
+  authSwitchBtn.addEventListener('click', () => setAuthMode(authMode === 'login' ? 'signup' : 'login'));
+
+  async function handleAuthSubmit(){
+    const username = authUsernameEl.value.trim();
+    const password = authPasswordEl.value;
+    if(username.length < 3){ authErrorEl.textContent = 'Username needs to be at least 3 characters.'; return; }
+    if(password.length < 6){ authErrorEl.textContent = 'Password needs to be at least 6 characters.'; return; }
+
+    authSubmitBtn.disabled = true;
+    authErrorEl.textContent = '';
+    try{
+      const endpoint = authMode === 'login' ? '/api/login' : '/api/signup';
+      const data = await api(endpoint, { method: 'POST', body: JSON.stringify({ username, password }) });
+      saveAuth(data.token, data.username);
+      showAccountChip();
+      authPasswordEl.value = '';
+      enterApp();
+    }catch(err){
+      authErrorEl.textContent = err.message || 'Something went wrong.';
+    }finally{
+      authSubmitBtn.disabled = false;
+    }
+  }
+
+  authSubmitBtn.addEventListener('click', handleAuthSubmit);
+  authPasswordEl.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ e.preventDefault(); handleAuthSubmit(); } });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    try{ await api('/api/logout', { method: 'POST' }); }catch(e){}
+    clearAuth();
+    showAccountChip();
+    allIdeas = [];
+    currentNiche = null; currentSlug = null; history = [];
+    showScreen('auth');
+  });
+
+  async function enterApp(){
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('niche-screen').style.display = 'block';
+    showScreen('niche');
+    await refreshAllIdeas();
+  }
+
+  async function checkExistingSession(){
+    if(!authToken){ showScreen('auth'); return; }
+    try{
+      const data = await api('/api/me', { method: 'GET' });
+      authUsername = data.username;
+      try{ localStorage.setItem('reelroll-username', authUsername); }catch(e){}
+      showAccountChip();
+      await enterApp();
+    }catch(e){
+      clearAuth();
+      showAccountChip();
+      showScreen('auth');
+    }
+  }
+
+  // ---------- app state ----------
+  let currentNiche = null;
   let currentSlug = null;
-  let history = [];          // [{id, idea, technique}]
+  let history = [];       // ideas for the current niche
+  let allIdeas = [];       // every idea this account has ever drawn, across all niches
 
-  let scriptIdea = null;     // the idea object currently being scripted
-  let scriptHistory = [];    // [{id, text, createdAt}] for scriptIdea
-  let activeScript = null;   // the script currently shown (not yet in history until replaced)
+  let scriptIdea = null;
+  let scripts = [];
+  let displayedScript = null;
+
+  async function refreshAllIdeas(){
+    const data = await api('/api/ideas', { method: 'GET' });
+    allIdeas = data.ideas || [];
+  }
+
+  function nicheNameForSlug(slug){
+    const found = allIdeas.find(i => i.slug === slug);
+    return found ? found.nicheName : slug.replace(/-/g, ' ');
+  }
+
+  // ---------- screen switching ----------
+  function showScreen(name){
+    document.getElementById('auth-screen').style.display = (name === 'auth') ? 'block' : 'none';
+    document.getElementById('niche-screen').style.display = (name === 'niche') ? 'block' : 'none';
+    document.getElementById('gen-screen').classList.toggle('active', name === 'gen');
+    document.getElementById('script-screen').classList.toggle('active', name === 'script');
+    document.getElementById('history-screen').classList.toggle('active', name === 'history');
+  }
 
   // ---------- step 1: niche input ----------
   const submitBtn = document.getElementById('niche-submit');
@@ -752,22 +992,15 @@
 
   submitBtn.addEventListener('click', handleNicheSubmit);
   input.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter'){
-      e.preventDefault();
-      handleNicheSubmit();
-    }
+    if(e.key === 'Enter'){ e.preventDefault(); handleNicheSubmit(); }
   });
 
-  function showScreen(name){
-    document.getElementById('niche-screen').style.display = (name === 'niche') ? 'block' : 'none';
-    document.getElementById('gen-screen').classList.toggle('active', name === 'gen');
-    document.getElementById('script-screen').classList.toggle('active', name === 'script');
-  }
-
-  function startNiche(text){
+  async function startNiche(text){
     currentNiche = text;
     currentSlug = slugify(text);
-    history = getHistory(currentSlug);
+
+    try{ await refreshAllIdeas(); }catch(e){ /* fall back to whatever we already have cached */ }
+    history = allIdeas.filter(i => i.slug === currentSlug);
 
     showScreen('gen');
     document.getElementById('panel-name').textContent = text;
@@ -778,10 +1011,11 @@
 
   function resetReelBody(){
     document.getElementById('reel-body').innerHTML =
-      '<p class="idea-empty">Your next idea shows up here. Tap the button below to draw one.</p>';
+      '<p class="idea-empty">Your next idea shows up here. Tap the button to draw one.</p>';
     const btn = document.getElementById('draw-btn');
     btn.disabled = false;
     btn.textContent = 'Give me an idea';
+    document.getElementById('get-script-btn').style.display = 'none';
   }
 
   function updateStats(){
@@ -806,18 +1040,8 @@
   }
 
   // ---------- proxied model call (shared by ideas + scripts) ----------
-  async function callModel(system, userMsg){
-    const response = await fetch(PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ system: system, userMsg: userMsg })
-    });
-
-    if(!response.ok){
-      const errText = await response.text().catch(() => '');
-      throw new Error('Request failed: ' + response.status + ' ' + errText);
-    }
-    return await response.json();
+  async function callModel(system, userMsg, mode){
+    return await api('/api/generate', { method: 'POST', body: JSON.stringify({ system, userMsg, mode: mode || 'json' }) });
   }
 
   // ---------- idea generation ----------
@@ -827,25 +1051,19 @@
     const userMsg = "Content type: " + niche + "\n\nIdeas already given (do not repeat or closely resemble these):\n" +
       (avoidList.length ? avoidList.map(a => "- " + a).join("\n") : "None yet.");
 
-    return await callModel(system, userMsg);
+    return await callModel(system, userMsg, 'json');
   }
 
   async function drawIdea(){
     const btn = document.getElementById('draw-btn');
     const body = document.getElementById('reel-body');
 
-    if(PROXY_URL.includes('YOUR-WORKER-SUBDOMAIN')){
-      body.innerHTML = '<p class="done-state">This copy isn\'t connected to a live idea engine yet.<br><b>Set PROXY_URL</b> in the script to your deployed proxy URL — see the setup instructions.</p>';
-      return;
-    }
-
     btn.disabled = true;
     btn.textContent = 'Rolling...';
+    document.getElementById('get-script-btn').style.display = 'none';
     body.innerHTML = '<p class="idea-empty">Cooking up something tailored to "' + escapeHtml(currentNiche) + '"...</p>';
 
-    // send the last 20 ideas as context to keep the request light while still avoiding repeats
     const recentIdeas = history.slice(-20).map(h => h.idea);
-
     let result = null;
     let attempts = 0;
     const seenLower = new Set(history.map(h => h.idea.trim().toLowerCase()));
@@ -861,19 +1079,26 @@
       }
       if(!result){ throw new Error('Could not find a fresh idea'); }
 
-      result.id = genId();
-      history.push(result);
-      setHistory(currentSlug, history);
+      const saved = await api('/api/ideas', {
+        method: 'POST',
+        body: JSON.stringify({ slug: currentSlug, nicheName: currentNiche, idea: result.idea, technique: result.technique })
+      });
+      const ideaRecord = saved.idea;
+      history.push(ideaRecord);
+      allIdeas.push(ideaRecord);
 
       body.innerHTML = `
         <div>
-          <span class="idea-tag animate">${escapeHtml(result.technique || 'idea')}</span>
-          <p class="idea-text animate">${escapeHtml(result.idea)}</p>
-          <button class="script-cta-btn" id="get-script-btn">Write me a script →</button>
+          <span class="idea-tag animate">${escapeHtml(ideaRecord.technique || 'idea')}</span>
+          <p class="idea-text animate">${escapeHtml(ideaRecord.idea)}</p>
         </div>
       `;
-      document.getElementById('live-region').textContent = result.idea;
-      document.getElementById('get-script-btn').addEventListener('click', () => openScriptScreen(result));
+      document.getElementById('live-region').textContent = ideaRecord.idea;
+
+      const scriptBtn = document.getElementById('get-script-btn');
+      scriptBtn.style.display = 'inline-block';
+      scriptBtn.onclick = () => openScriptScreen(ideaRecord);
+
       renderHistory();
       updateStats();
     }catch(err){
@@ -893,28 +1118,50 @@
     input.focus();
   });
 
-  document.getElementById('reset-btn').addEventListener('click', () => {
+  document.getElementById('reset-btn').addEventListener('click', async () => {
     if(!currentSlug) return;
     const ok = confirm(`Clear idea history for "${currentNiche}"? You may start seeing repeats after this.`);
     if(!ok) return;
-    history = [];
-    setHistory(currentSlug, []);
-    resetReelBody();
-    renderHistory();
-    updateStats();
+    try{
+      await api('/api/ideas?slug=' + encodeURIComponent(currentSlug), { method: 'DELETE' });
+      history = [];
+      allIdeas = allIdeas.filter(i => i.slug !== currentSlug);
+      resetReelBody();
+      renderHistory();
+      updateStats();
+    }catch(err){
+      alert('Could not clear history: ' + err.message);
+    }
   });
 
   // ---------- script generation ----------
-  function openScriptScreen(idea){
+  async function openScriptScreen(idea){
     scriptIdea = idea;
-    scriptHistory = getScripts(currentSlug, idea.id);
-    activeScript = null;
+    if(idea.slug){
+      currentSlug = idea.slug;
+      currentNiche = idea.nicheName || nicheNameForSlug(idea.slug);
+    }
 
     showScreen('script');
     document.getElementById('script-idea-label').textContent = idea.idea;
+    document.getElementById('download-script-btn').disabled = true;
+    document.getElementById('script-body').innerHTML = '<p class="idea-empty">Loading...</p>';
+
+    try{
+      const data = await api('/api/scripts?ideaId=' + encodeURIComponent(idea.id), { method: 'GET' });
+      scripts = data.scripts || [];
+    }catch(e){
+      scripts = [];
+    }
+    displayedScript = null;
     renderScriptHistory();
     updateScriptStats();
-    generateScript(true);
+
+    if(scripts.length > 0){
+      showScript(scripts[scripts.length - 1], false);
+    }else{
+      generateScript();
+    }
   }
 
   document.getElementById('script-back-btn').addEventListener('click', () => {
@@ -922,23 +1169,23 @@
   });
 
   function updateScriptStats(){
-    document.getElementById('script-stat-used').textContent = scriptHistory.length + (activeScript ? 1 : 0);
+    document.getElementById('script-stat-used').textContent = scripts.length;
   }
 
   function renderScriptHistory(){
     const list = document.getElementById('script-history-list');
-    const all = activeScript ? scriptHistory.concat([activeScript]) : scriptHistory;
-    if(all.length === 0){
+    if(scripts.length === 0){
       list.innerHTML = '<li class="history-empty">No scripts yet.</li>';
       return;
     }
     list.innerHTML = '';
-    all.slice().reverse().forEach((s, i) => {
+    scripts.slice().reverse().forEach((s, i) => {
+      const versionNum = scripts.length - i;
       const li = document.createElement('li');
-      const isActive = activeScript && s.id === activeScript.id;
+      const isActive = displayedScript && s.id === displayedScript.id;
       li.className = 'clickable';
       const preview = s.text.replace(/\s+/g, ' ').slice(0, 90);
-      li.innerHTML = `<b>${isActive ? '★ Current · ' : ''}Version ${all.length - i}</b>${escapeHtml(preview)}${s.text.length > 90 ? '…' : ''}`;
+      li.innerHTML = `<b>${isActive ? '★ ' : ''}Version ${versionNum}</b>${escapeHtml(preview)}${s.text.length > 90 ? '…' : ''}`;
       li.title = 'View this script version';
       li.addEventListener('click', () => showScript(s, false));
       list.appendChild(li);
@@ -946,55 +1193,48 @@
   }
 
   function formatScriptHtml(text){
-    // Turn HOOK: / BODY: / CTA: style labels into styled section headers if present
     const escaped = escapeHtml(text);
     return escaped.replace(/^(HOOK|BODY|CTA)\s*:?/gim, '<span class="script-section-label">$1</span>');
   }
 
   function showScript(scriptObj, animate){
+    displayedScript = scriptObj;
     const body = document.getElementById('script-body');
     body.innerHTML = `<p class="script-text${animate ? ' animate' : ''}">${formatScriptHtml(scriptObj.text)}</p>`;
     document.getElementById('script-live-region').textContent = scriptObj.text;
+    document.getElementById('download-script-btn').disabled = false;
+    renderScriptHistory();
   }
 
-  async function generateScript(isFirst){
+  async function generateScript(){
     const body = document.getElementById('script-body');
     const btn = document.getElementById('new-script-btn');
 
-    if(PROXY_URL.includes('YOUR-WORKER-SUBDOMAIN')){
-      body.innerHTML = '<p class="done-state">This copy isn\'t connected to a live idea engine yet.<br><b>Set PROXY_URL</b> in the script to your deployed proxy URL.</p>';
-      return;
-    }
-
+    const isFirst = scripts.length === 0;
     btn.disabled = true;
     btn.textContent = isFirst ? 'Writing...' : 'Writing new version...';
     if(isFirst){
       body.innerHTML = '<p class="idea-empty">Writing a script for this idea...</p>';
     }
 
-    // if there's already an active script on screen, retire it into history first
-    if(activeScript){
-      scriptHistory.push(activeScript);
-      setScripts(currentSlug, scriptIdea.id, scriptHistory);
-      activeScript = null;
-    }
+    const system = "You are a short-form video scriptwriter for Instagram Reels and TikTok. Given a content niche, a specific content idea, and the hook technique it should use, write one complete, ready-to-film script meant to be spoken aloud in 30-60 seconds. Structure it into three clearly labeled sections on their own lines: 'HOOK:' (the first 1-2 seconds, must grab attention immediately), 'BODY:' (the main content, short punchy spoken lines, you may add brief on-screen text cues in [brackets]), and 'CTA:' (a short closing call to action). It must be meaningfully different in wording and angle from any script already written for this idea. Respond with ONLY the plain script text — no JSON, no markdown fences, no preamble or explanation, just the script itself starting with HOOK:";
 
-    const system = "You are a short-form video scriptwriter for Instagram Reels and TikTok. Given a content niche, a specific content idea, and the hook technique it should use, write one complete, ready-to-film script meant to be spoken aloud in 30-60 seconds. Structure it into three clearly labeled sections on their own lines: 'HOOK:' (the first 1-2 seconds, must grab attention immediately), 'BODY:' (the main content, short punchy spoken lines, you may add brief on-screen text cues in [brackets]), and 'CTA:' (a short closing call to action). It must be meaningfully different in wording and angle from any script already written for this idea. Respond with ONLY a JSON object, no markdown fences, no preamble: {\"script\": \"the full script text with HOOK:, BODY:, and CTA: sections separated by blank lines\"}";
-
-    const avoidScripts = scriptHistory.slice(-10).map(s => s.text);
+    const avoidScripts = scripts.slice(-8).map(s => s.text);
     const userMsg = "Content niche: " + currentNiche +
       "\nContent idea: " + scriptIdea.idea +
       "\nHook technique to use: " + (scriptIdea.technique || 'curiosity gap') +
-      "\n\nScripts already written for this idea (write something different):\n" +
+      "\n\nScripts already written for this idea (write something meaningfully different):\n" +
       (avoidScripts.length ? avoidScripts.map(s => "---\n" + s).join("\n") : "None yet.");
 
     try{
-      const result = await callModel(system, userMsg);
-      if(!result || !result.script){ throw new Error('No script returned'); }
+      const result = await callModel(system, userMsg, 'raw');
+      if(!result || !result.text){ throw new Error('No script returned'); }
 
-      activeScript = { id: genId(), text: result.script, createdAt: Date.now() };
-      showScript(activeScript, true);
-      renderScriptHistory();
+      const saved = await api('/api/scripts', { method: 'POST', body: JSON.stringify({ ideaId: scriptIdea.id, text: result.text }) });
+      const newScript = saved.script;
+      scripts.push(newScript);
+
+      showScript(newScript, true);
       updateScriptStats();
     }catch(err){
       console.error(err);
@@ -1005,19 +1245,137 @@
     }
   }
 
-  document.getElementById('new-script-btn').addEventListener('click', () => generateScript(false));
+  document.getElementById('new-script-btn').addEventListener('click', () => generateScript());
 
-  document.getElementById('script-clear-btn').addEventListener('click', () => {
+  document.getElementById('script-clear-btn').addEventListener('click', async () => {
     if(!scriptIdea) return;
     const ok = confirm('Clear all saved script versions for this idea? This cannot be undone.');
     if(!ok) return;
-    scriptHistory = [];
-    activeScript = null;
-    setScripts(currentSlug, scriptIdea.id, []);
-    renderScriptHistory();
-    updateScriptStats();
-    generateScript(true);
+    try{
+      await api('/api/scripts?ideaId=' + encodeURIComponent(scriptIdea.id), { method: 'DELETE' });
+      scripts = [];
+      displayedScript = null;
+      renderScriptHistory();
+      updateScriptStats();
+      document.getElementById('download-script-btn').disabled = true;
+      generateScript();
+    }catch(err){
+      alert('Could not clear scripts: ' + err.message);
+    }
   });
+
+  document.getElementById('download-script-btn').addEventListener('click', () => {
+    if(!displayedScript || !scriptIdea) return;
+    const versionNum = scripts.findIndex(s => s.id === displayedScript.id) + 1;
+    const nicheSlug = slugify(currentNiche || 'reel');
+    const ideaSnippet = slugify((scriptIdea.idea || 'idea').split(' ').slice(0, 6).join(' '));
+    downloadText(`${nicheSlug}-${ideaSnippet}-v${versionNum || 1}.txt`, displayedScript.text);
+  });
+
+  // ---------- global history screen (ideas + scripts across everything) ----------
+  let historyTab = 'ideas';
+  let allScriptsCache = null;
+
+  async function renderFullHistory(){
+    const list = document.getElementById('full-history-list');
+
+    if(historyTab === 'ideas'){
+      try{ await refreshAllIdeas(); }catch(e){}
+      const ideas = allIdeas.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      if(ideas.length === 0){
+        list.innerHTML = '<li class="full-history-empty">No ideas drawn yet across any content type.</li>';
+        return;
+      }
+      list.innerHTML = '';
+      ideas.forEach(idea => {
+        const li = document.createElement('li');
+        li.className = 'full-history-item';
+        li.innerHTML = `
+          <div class="fh-meta">
+            <span class="fh-niche">${escapeHtml(idea.nicheName)} · ${escapeHtml(idea.technique || '')}</span>
+            <span>${formatDate(idea.createdAt)}</span>
+          </div>
+          <div class="fh-text">${escapeHtml(idea.idea)}</div>
+        `;
+        li.addEventListener('click', () => openScriptScreen(idea));
+        list.appendChild(li);
+      });
+    }else{
+      list.innerHTML = '<li class="full-history-empty">Loading...</li>';
+      try{
+        const data = await api('/api/scripts', { method: 'GET' });
+        allScriptsCache = data.scripts || [];
+      }catch(e){
+        list.innerHTML = '<li class="full-history-empty">Could not load scripts.</li>';
+        return;
+      }
+      try{ await refreshAllIdeas(); }catch(e){}
+      const ideaLookup = {};
+      allIdeas.forEach(i => { ideaLookup[i.id] = i; });
+
+      // group by ideaId to compute version numbers
+      const byIdea = {};
+      allScriptsCache.forEach(s => { (byIdea[s.ideaId] = byIdea[s.ideaId] || []).push(s); });
+      Object.values(byIdea).forEach(arr => arr.sort((a, b) => a.createdAt - b.createdAt));
+
+      const flattened = allScriptsCache.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if(flattened.length === 0){
+        list.innerHTML = '<li class="full-history-empty">No scripts written yet.</li>';
+        return;
+      }
+      list.innerHTML = '';
+      flattened.forEach(s => {
+        const idea = ideaLookup[s.ideaId];
+        const versionArr = byIdea[s.ideaId] || [s];
+        const versionNum = versionArr.findIndex(x => x.id === s.id) + 1;
+        const li = document.createElement('li');
+        li.className = 'full-history-item';
+        const ideaText = idea ? idea.idea : '(original idea no longer available)';
+        const preview = s.text.replace(/\s+/g, ' ').slice(0, 140);
+        li.innerHTML = `
+          <div class="fh-meta">
+            <span class="fh-niche">${escapeHtml(idea ? idea.nicheName : '')} · v${versionNum}/${versionArr.length}</span>
+            <span>${formatDate(s.createdAt)}</span>
+          </div>
+          <div class="fh-text"><b style="display:block; margin-bottom:4px;">${escapeHtml(ideaText)}</b>${escapeHtml(preview)}${s.text.length > 140 ? '…' : ''}</div>
+        `;
+        li.addEventListener('click', async () => {
+          if(!idea) return;
+          await openScriptScreen(idea);
+          const match = scripts.find(x => x.id === s.id);
+          if(match) showScript(match, false);
+        });
+        list.appendChild(li);
+      });
+    }
+  }
+
+  document.getElementById('history-btn').addEventListener('click', () => {
+    showScreen('history');
+    renderFullHistory();
+  });
+
+  document.getElementById('history-back-btn').addEventListener('click', () => {
+    showScreen(currentSlug ? 'gen' : 'niche');
+  });
+
+  document.getElementById('tab-ideas').addEventListener('click', () => {
+    historyTab = 'ideas';
+    document.getElementById('tab-ideas').classList.add('active');
+    document.getElementById('tab-scripts').classList.remove('active');
+    renderFullHistory();
+  });
+  document.getElementById('tab-scripts').addEventListener('click', () => {
+    historyTab = 'scripts';
+    document.getElementById('tab-scripts').classList.add('active');
+    document.getElementById('tab-ideas').classList.remove('active');
+    renderFullHistory();
+  });
+
+  // ---------- boot ----------
+  showAccountChip();
+  checkExistingSession();
 
 })();
 </script>
