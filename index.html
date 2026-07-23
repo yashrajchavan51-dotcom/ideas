@@ -43,6 +43,9 @@
   html{ scroll-behavior: smooth; }
 
   body{
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     margin: 0;
     background:
       radial-gradient(60% 50% at 85% -10%, rgba(255,90,54,0.10), transparent 60%),
@@ -310,8 +313,7 @@
   .reel-frame{
     position: relative;
     width: min(560px, 100%);
-    min-height: 420px;
-    max-height: 78vh;
+    height: clamp(420px, 72vh, 640px);
     background: var(--bg-soft);
     border: 1px solid var(--line);
     border-radius: 28px;
@@ -345,11 +347,25 @@
     text-align: center;
     position: relative;
     overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-soft) transparent;
   }
+  .reel-body::-webkit-scrollbar{ width: 6px; }
+  .reel-body::-webkit-scrollbar-track{ background: transparent; }
+  .reel-body::-webkit-scrollbar-thumb{ background: var(--accent-soft); border-radius: 999px; }
   .reel-body.script-body{
     align-items: flex-start;
     text-align: left;
   }
+
+  .history-list{
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+  .history-list::-webkit-scrollbar{ width: 5px; }
+  .history-list::-webkit-scrollbar-track{ background: transparent; }
+  .history-list::-webkit-scrollbar-thumb{ background: var(--line); border-radius: 999px; }
 
   .idea-empty{
     color: var(--text-muted);
@@ -397,13 +413,21 @@
   }
   .script-section-label:first-child{ margin-top: 0; }
 
+  .script-timestamp{
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mint);
+    margin-right: 6px;
+  }
+
   @keyframes reelIn{
-    0%{ opacity: 0; transform: translateY(18px); }
-    60%{ opacity: 1; }
+    0%{ opacity: 0; transform: translateY(10px); }
     100%{ opacity: 1; transform: translateY(0); }
   }
   .idea-text.animate, .idea-tag.animate, .script-text.animate{
-    animation: reelIn 0.45s ease;
+    animation: reelIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
   @media (prefers-reduced-motion: reduce){
     .idea-text.animate, .idea-tag.animate, .script-text.animate{ animation: none; }
@@ -1194,7 +1218,8 @@
 
   function formatScriptHtml(text){
     const escaped = escapeHtml(text);
-    return escaped.replace(/^(HOOK|BODY|CTA)\s*:?/gim, '<span class="script-section-label">$1</span>');
+    const withLabels = escaped.replace(/^(HOOK|BODY|CTA)\s*:?/gim, '<span class="script-section-label">$1</span>');
+    return withLabels.replace(/(\[\d{1,2}:\d{2}-\d{1,2}:\d{2}\])/g, '<span class="script-timestamp">$1</span>');
   }
 
   function showScript(scriptObj, animate){
@@ -1217,7 +1242,7 @@
       body.innerHTML = '<p class="idea-empty">Writing a script for this idea...</p>';
     }
 
-    const system = "You are a short-form video scriptwriter for Instagram Reels and TikTok. Given a content niche, a specific content idea, and the hook technique it should use, write one complete, ready-to-film script meant to be spoken aloud in 30-60 seconds. Structure it into three clearly labeled sections on their own lines: 'HOOK:' (the first 1-2 seconds, must grab attention immediately), 'BODY:' (the main content, short punchy spoken lines, you may add brief on-screen text cues in [brackets]), and 'CTA:' (a short closing call to action). It must be meaningfully different in wording and angle from any script already written for this idea. Respond with ONLY the plain script text — no JSON, no markdown fences, no preamble or explanation, just the script itself starting with HOOK:";
+    const system = "You are a scriptwriter who writes ONLY fast-paced, vertical short-form video scripts for Instagram Reels and TikTok — never long-form or YouTube-style narration. Every script must total between 25 and 40 seconds of spoken content, start to finish. Structure it into three labeled sections on their own lines: 'HOOK:', 'BODY:', and 'CTA:'. Under every section, write short spoken lines — one beat per line — and prefix EVERY single line with a precise, sequential, non-overlapping timestamp range in the exact format [MM:SS-MM:SS], e.g. '[0:00-0:02] Stop scrolling — this changes everything.' The timestamps across the whole script must add up cleanly with no gaps or overlaps, ending at or under 0:40. Keep each line under 12 words — punchy hits, not paragraphs or run-on sentences. You may add a short on-screen text cue in [brackets] after the timestamp for visual direction (e.g. '[0:04-0:07] [on-screen: bold text \"WAIT FOR IT\"] Here's the trick nobody tells you.'). It must be meaningfully different in wording and angle from any script already written for this idea. Respond with ONLY the plain script text — no JSON, no markdown fences, no preamble or explanation, just the script itself starting with HOOK:";
 
     const avoidScripts = scripts.slice(-8).map(s => s.text);
     const userMsg = "Content niche: " + currentNiche +
